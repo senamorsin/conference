@@ -1,0 +1,39 @@
+{
+  "output_csv": "/home/senamorsin/Desktop/conference/data/processed/asl_letters_combined.csv",
+  "total_rows": 56065,
+  "input_csvs": [
+    "/home/senamorsin/Desktop/conference/data/processed/asl_letters_landmarks.csv",
+    "/home/senamorsin/Desktop/conference/data/processed/asl_letters_cross_dataset.csv"
+  ],
+  "rows_per_source": {
+    "/home/senamorsin/Desktop/conference/data/processed/asl_letters_landmarks.csv": 55382,
+    "/home/senamorsin/Desktop/conference/data/processed/asl_letters_cross_dataset.csv": 683
+  },
+  "label_counts": {
+    "A": 2215,
+    "B": 2235,
+    "C": 1985,
+    "D": 2488,
+    "E": 2336,
+    "F": 2895,
+    "G": 2459,
+    "H": 2408,
+    "I": 2406,
+    "K": 2722,
+    "L": 2560,
+    "M": 1616,
+    "N": 1299,
+    "NOTHING": 1,
+    "O": 2284,
+    "P": 2068,
+    "Q": 2142,
+    "R": 2578,
+    "S": 2578,
+    "T": 2387,
+    "U": 2539,
+    "V": 2575,
+    "W": 2482,
+    "X": 2191,
+    "Y": 2616
+  }
+}

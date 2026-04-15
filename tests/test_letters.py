@@ -5,9 +5,10 @@ import numpy as np
 from sklearn.dummy import DummyClassifier
 
 from src.letters.classifier import LetterPrediction, build_default_letter_classifier
+from src.letters.disambiguation import load_specialized_disambiguator
 from src.letters.decoder import LetterDecoder
 from src.letters.word_builder import LetterWordBuilder
-from src.letters.labels import DEFAULT_TRAINING_LABELS, normalize_dataset_label
+from src.letters.labels import DEFAULT_TRAINING_LABELS, FEATURE_COLUMNS, normalize_dataset_label
 from src.postprocess.dictionary import DictionaryCorrector
 
 
@@ -42,16 +43,16 @@ def test_normalize_dataset_label_supports_common_aliases() -> None:
 
 
 def test_build_default_letter_classifier_loads_joblib_artifact(tmp_path: Path) -> None:
-    X = np.zeros((4, 63), dtype=np.float32)
+    X = np.zeros((4, len(FEATURE_COLUMNS)), dtype=np.float32)
     y = np.array(["A", "A", "NOTHING", "NOTHING"])
     model = DummyClassifier(strategy="prior")
     model.fit(X, y)
 
     artifact_path = tmp_path / "letters.joblib"
-    joblib.dump({"model": model, "labels": tuple(model.classes_)}, artifact_path)
+    joblib.dump({"model": model, "labels": tuple(model.classes_), "feature_dim": len(FEATURE_COLUMNS)}, artifact_path)
 
     classifier = build_default_letter_classifier(artifact_path)
-    prediction = classifier.predict(np.zeros(63, dtype=np.float32))
+    prediction = classifier.predict(np.zeros(len(FEATURE_COLUMNS), dtype=np.float32))
 
     assert prediction.label in {"A", "NOTHING"}
     assert 0.0 <= prediction.confidence <= 1.0
@@ -59,9 +60,52 @@ def test_build_default_letter_classifier_loads_joblib_artifact(tmp_path: Path) -
 
 def test_build_default_letter_classifier_falls_back_to_dummy_when_model_missing(tmp_path: Path) -> None:
     classifier = build_default_letter_classifier(tmp_path / "missing.joblib")
-    prediction = classifier.predict(np.zeros(63, dtype=np.float32))
+    prediction = classifier.predict(np.zeros(len(FEATURE_COLUMNS), dtype=np.float32))
 
     assert prediction.label in DEFAULT_TRAINING_LABELS
+
+
+def test_build_default_letter_classifier_accepts_extended_features_for_older_artifact(tmp_path: Path) -> None:
+    X = np.zeros((4, 63), dtype=np.float32)
+    y = np.array(["A", "A", "NOTHING", "NOTHING"])
+    model = DummyClassifier(strategy="prior")
+    model.fit(X, y)
+
+    artifact_path = tmp_path / "legacy_letters.joblib"
+    joblib.dump({"model": model, "labels": tuple(model.classes_), "feature_dim": 63}, artifact_path)
+
+    classifier = build_default_letter_classifier(artifact_path)
+    prediction = classifier.predict(np.zeros(len(FEATURE_COLUMNS), dtype=np.float32))
+
+    assert prediction.label in {"A", "NOTHING"}
+    assert 0.0 <= prediction.confidence <= 1.0
+
+
+def test_specialized_disambiguator_refines_prediction_for_supported_group(tmp_path: Path) -> None:
+    X = np.zeros((4, len(FEATURE_COLUMNS)), dtype=np.float32)
+    y = np.array(["M", "M", "N", "N"])
+    model = DummyClassifier(strategy="constant", constant="N")
+    model.fit(X, y)
+
+    artifact_dir = tmp_path / "disambiguators"
+    artifact_dir.mkdir()
+    joblib.dump(
+        {
+            "model": model,
+            "labels": tuple(model.classes_),
+            "feature_dim": len(FEATURE_COLUMNS),
+        },
+        artifact_dir / "mn.joblib",
+    )
+
+    disambiguator = load_specialized_disambiguator(artifact_dir)
+    result = disambiguator.resolve(
+        np.zeros(len(FEATURE_COLUMNS), dtype=np.float32),
+        LetterPrediction(label="M", confidence=0.61),
+    )
+
+    assert result.resolver_name == "mn"
+    assert result.prediction.label == "N"
 
 
 def test_word_builder_finalizes_corrected_word_after_pause() -> None:

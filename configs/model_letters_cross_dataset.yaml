@@ -38,3 +38,17 @@ features:
 evaluation:
   model_path: models/letters/asl_letters_random_forest.joblib
   metrics_output_path: reports/letters/asl_letters_cross_dataset_metrics.json
+
+training:
+  backend: auto
+  device: auto
+  model_output_path: models/letters/asl_letters_cross_dataset_random_forest.joblib
+  metrics_output_path: reports/letters/asl_letters_cross_dataset_train_metrics.json
+  test_size: 0.2
+  random_state: 42
+  n_estimators: 500
+  class_weight: balanced_subsample
+  max_depth: 10
+  learning_rate: 0.1
+  subsample: 0.9
+  colsample_bytree: 0.9

@@ -1,0 +1,38 @@
+{
+  "group_name": "mn",
+  "labels": [
+    "M",
+    "N"
+  ],
+  "accuracy": 0.9296740994854202,
+  "train_samples": 2332,
+  "test_samples": 583,
+  "classification_report": {
+    "M": {
+      "precision": 0.9147058823529411,
+      "recall": 0.9628482972136223,
+      "f1-score": 0.9381598793363499,
+      "support": 323.0
+    },
+    "N": {
+      "precision": 0.9506172839506173,
+      "recall": 0.8884615384615384,
+      "f1-score": 0.9184890656063618,
+      "support": 260.0
+    },
+    "accuracy": 0.9296740994854202,
+    "macro avg": {
+      "precision": 0.9326615831517793,
+      "recall": 0.9256549178375804,
+      "f1-score": 0.9283244724713559,
+      "support": 583.0
+    },
+    "weighted avg": {
+      "precision": 0.9307212587086802,
+      "recall": 0.9296740994854202,
+      "f1-score": 0.9293873037449315,
+      "support": 583.0
+    }
+  },
+  "model_output_path": "/home/senamorsin/Desktop/conference/models/letters/disambiguators/mn.joblib"
+}

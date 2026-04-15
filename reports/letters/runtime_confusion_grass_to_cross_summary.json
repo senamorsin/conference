@@ -1,0 +1,12 @@
+{
+  "accuracy": 0.9487554904831625,
+  "evaluated_samples": 683,
+  "resolver_counts": {
+    "cdo": 82,
+    "mn": 58
+  },
+  "resolved_prediction_changes": 39,
+  "model_path": "/home/senamorsin/Desktop/conference/models/letters/asl_letters_random_forest.joblib",
+  "disambiguator_dir": "/home/senamorsin/Desktop/conference/models/letters/disambiguators",
+  "features_csv": "/home/senamorsin/Desktop/conference/data/processed/asl_letters_cross_dataset.csv"
+}

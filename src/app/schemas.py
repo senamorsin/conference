@@ -18,6 +18,7 @@ class PredictResponse(BaseModel):
     status: str
     current_letter: str | None
     confidence: float
+    resolver_name: str | None = None
     accepted_letters: str
     feature_dim: int
     landmarks_detected: bool

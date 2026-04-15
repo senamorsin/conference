@@ -1,0 +1,74 @@
+[
+  {
+    "true_label": "N",
+    "pred_label": "M",
+    "count": 15,
+    "share_of_true_label": 0.5357142857142857
+  },
+  {
+    "true_label": "C",
+    "pred_label": "D",
+    "count": 11,
+    "share_of_true_label": 0.39285714285714285
+  },
+  {
+    "true_label": "O",
+    "pred_label": "D",
+    "count": 9,
+    "share_of_true_label": 0.36
+  },
+  {
+    "true_label": "T",
+    "pred_label": "L",
+    "count": 5,
+    "share_of_true_label": 0.16666666666666666
+  },
+  {
+    "true_label": "C",
+    "pred_label": "O",
+    "count": 4,
+    "share_of_true_label": 0.14285714285714285
+  },
+  {
+    "true_label": "X",
+    "pred_label": "M",
+    "count": 4,
+    "share_of_true_label": 0.13333333333333333
+  },
+  {
+    "true_label": "M",
+    "pred_label": "N",
+    "count": 3,
+    "share_of_true_label": 0.1111111111111111
+  },
+  {
+    "true_label": "S",
+    "pred_label": "E",
+    "count": 3,
+    "share_of_true_label": 0.10714285714285714
+  },
+  {
+    "true_label": "V",
+    "pred_label": "K",
+    "count": 3,
+    "share_of_true_label": 0.10344827586206896
+  },
+  {
+    "true_label": "F",
+    "pred_label": "B",
+    "count": 3,
+    "share_of_true_label": 0.1
+  },
+  {
+    "true_label": "M",
+    "pred_label": "H",
+    "count": 2,
+    "share_of_true_label": 0.07407407407407407
+  },
+  {
+    "true_label": "Q",
+    "pred_label": "P",
+    "count": 2,
+    "share_of_true_label": 0.07142857142857142
+  }
+]

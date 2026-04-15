@@ -35,17 +35,30 @@ class DummyLetterClassifier:
 
 
 class SklearnLetterClassifier:
-    def __init__(self, model: Any, labels: tuple[str, ...]) -> None:
+    def __init__(self, model: Any, labels: tuple[str, ...], feature_dim: int | None = None) -> None:
         self._model = model
         self._labels = labels
+        self._feature_dim = feature_dim
 
     def predict(self, features: np.ndarray) -> LetterPrediction:
-        probabilities = self._model.predict_proba(features.reshape(1, -1))[0]
+        aligned = self._align_features(features)
+        probabilities = self._model.predict_proba(aligned.reshape(1, -1))[0]
         best_index = int(np.argmax(probabilities))
         return LetterPrediction(
             label=self._labels[best_index],
             confidence=float(probabilities[best_index]),
         )
+
+    def _align_features(self, features: np.ndarray) -> np.ndarray:
+        if self._feature_dim is None:
+            return features
+        if features.size < self._feature_dim:
+            raise ValueError(
+                f"Received {features.size} features, but the classifier expects at least {self._feature_dim}."
+            )
+        if features.size == self._feature_dim:
+            return features
+        return features[: self._feature_dim]
 
 
 def load_letter_classifier(model_path: str | Path = DEFAULT_LETTER_MODEL_PATH) -> SklearnLetterClassifier:
@@ -55,11 +68,13 @@ def load_letter_classifier(model_path: str | Path = DEFAULT_LETTER_MODEL_PATH) -
     if isinstance(artifact, dict):
         model = artifact["model"]
         labels = tuple(str(label) for label in artifact["labels"])
+        feature_dim = artifact.get("feature_dim")
     else:
         model = artifact
         labels = DEFAULT_TRAINING_LABELS
+        feature_dim = None
 
-    return SklearnLetterClassifier(model=model, labels=labels)
+    return SklearnLetterClassifier(model=model, labels=labels, feature_dim=feature_dim)
 
 
 def build_default_letter_classifier(model_path: str | Path = DEFAULT_LETTER_MODEL_PATH) -> LetterClassifierProtocol:

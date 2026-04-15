@@ -1,7 +1,7 @@
 dataset:
-  name: grassknoted/asl-alphabet
-  root_dir: data/raw/asl-alphabet
-  train_subdir: asl_alphabet_train
+  name: combined/grassknoted+danrasband
+  root_dir: data/processed
+  train_subdir: .
   accepted_labels:
     - A
     - B
@@ -29,17 +29,19 @@ dataset:
     - Y
     - NOTHING
 
+merge:
+  input_csvs:
+    - data/processed/asl_letters_landmarks.csv
+    - data/processed/asl_letters_cross_dataset.csv
+
 features:
-  output_csv: data/processed/asl_letters_landmarks.csv
-  max_images_per_class: null
-  min_detection_confidence: 0.5
-  delegate: auto
+  output_csv: data/processed/asl_letters_combined.csv
 
 training:
   backend: auto
   device: auto
-  model_output_path: models/letters/asl_letters_random_forest.joblib
-  metrics_output_path: reports/letters/asl_letters_metrics.json
+  model_output_path: models/letters/asl_letters_combined_random_forest.joblib
+  metrics_output_path: reports/letters/asl_letters_combined_train_metrics.json
   test_size: 0.2
   random_state: 42
   n_estimators: 500

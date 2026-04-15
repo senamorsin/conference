@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 
 from src.landmarks.mediapipe_extractor import MediaPipeHandExtractor
 from src.letters.classifier import LetterClassifierProtocol, build_default_letter_classifier
+from src.letters.disambiguation import SpecializedLetterDisambiguator, load_specialized_disambiguator
 from src.letters.decoder import LetterDecoder
 from src.letters.word_builder import LetterWordBuilder
 from src.postprocess.dictionary import DictionaryCorrector
@@ -14,6 +15,7 @@ class AppPipelineState:
     mode: str
     extractor: MediaPipeHandExtractor
     classifier: LetterClassifierProtocol
+    disambiguator: SpecializedLetterDisambiguator
     decoder: LetterDecoder
     word_builder: LetterWordBuilder
     last_status: str = field(default="idle")
@@ -33,6 +35,8 @@ class AppPipelineState:
             )
 
         prediction = self.classifier.predict(extraction.features)
+        resolution = self.disambiguator.resolve(extraction.features, prediction)
+        prediction = resolution.prediction
         if prediction.label == "NOTHING":
             self.decoder.step(None)
             finalized = self._maybe_finalize_word()
@@ -42,6 +46,7 @@ class AppPipelineState:
                 landmarks_detected=True,
                 confidence=prediction.confidence,
                 hand_landmarks=extraction.landmarks,
+                resolver_name=resolution.resolver_name,
             )
 
         self.decoder.step(prediction)
@@ -51,6 +56,7 @@ class AppPipelineState:
             landmarks_detected=True,
             confidence=self.decoder.current_confidence,
             hand_landmarks=extraction.landmarks,
+            resolver_name=resolution.resolver_name,
         )
 
     def reset(self) -> None:
@@ -76,6 +82,7 @@ class AppPipelineState:
         landmarks_detected: bool,
         confidence: float,
         hand_landmarks: list[list[float]],
+        resolver_name: str | None,
     ) -> dict[str, object]:
         latest = self.word_builder.latest
         return {
@@ -83,6 +90,7 @@ class AppPipelineState:
             "status": self.last_status,
             "current_letter": self.decoder.current_letter,
             "confidence": confidence,
+            "resolver_name": resolver_name,
             "accepted_letters": self.decoder.accepted_letters,
             "feature_dim": self.extractor.feature_dim,
             "landmarks_detected": landmarks_detected,
@@ -99,6 +107,7 @@ class AppPipelineState:
 def create_app_state() -> AppPipelineState:
     extractor = MediaPipeHandExtractor(max_num_hands=1)
     classifier = build_default_letter_classifier()
+    disambiguator = load_specialized_disambiguator()
     decoder = LetterDecoder(stable_steps=3, accept_threshold=0.6, blank_steps_to_reset=5)
     word_builder = LetterWordBuilder(
         corrector=DictionaryCorrector.from_path(),
@@ -108,6 +117,7 @@ def create_app_state() -> AppPipelineState:
         mode="letters",
         extractor=extractor,
         classifier=classifier,
+        disambiguator=disambiguator,
         decoder=decoder,
         word_builder=word_builder,
     )

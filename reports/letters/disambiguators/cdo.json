@@ -1,0 +1,45 @@
+{
+  "group_name": "cdo",
+  "labels": [
+    "C",
+    "D",
+    "O"
+  ],
+  "accuracy": 0.992603550295858,
+  "train_samples": 5405,
+  "test_samples": 1352,
+  "classification_report": {
+    "C": {
+      "precision": 0.9949874686716792,
+      "recall": 1.0,
+      "f1-score": 0.9974874371859297,
+      "support": 397.0
+    },
+    "D": {
+      "precision": 0.9899799599198397,
+      "recall": 0.9919678714859438,
+      "f1-score": 0.9909729187562688,
+      "support": 498.0
+    },
+    "O": {
+      "precision": 0.9933920704845814,
+      "recall": 0.986870897155361,
+      "f1-score": 0.9901207464324918,
+      "support": 457.0
+    },
+    "accuracy": 0.992603550295858,
+    "macro avg": {
+      "precision": 0.9927864996920334,
+      "recall": 0.9929462562137683,
+      "f1-score": 0.99286036745823,
+      "support": 1352.0
+    },
+    "weighted avg": {
+      "precision": 0.992603713989786,
+      "recall": 0.992603550295858,
+      "f1-score": 0.9925977864076071,
+      "support": 1352.0
+    }
+  },
+  "model_output_path": "/home/senamorsin/Desktop/conference/models/letters/disambiguators/cdo.joblib"
+}

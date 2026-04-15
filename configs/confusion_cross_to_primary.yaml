@@ -1,0 +1,9 @@
+analysis:
+  title: danrasband-trained model on grassknoted external set
+  model_path: models/letters/asl_letters_cross_dataset_random_forest.joblib
+  features_csv: data/processed/asl_letters_landmarks.csv
+  csv_output_path: reports/letters/confusion_cross_to_primary.csv
+  normalized_csv_output_path: reports/letters/confusion_cross_to_primary_normalized.csv
+  top_confusions_output_path: reports/letters/confusion_cross_to_primary_top.json
+  plot_output_path: reports/letters/confusion_cross_to_primary.png
+  top_k: 12

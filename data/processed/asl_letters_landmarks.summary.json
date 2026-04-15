@@ -3,6 +3,7 @@
   "dataset_root": "/home/senamorsin/Desktop/conference/data/raw/asl-alphabet",
   "train_dir": "/home/senamorsin/Desktop/conference/data/raw/asl-alphabet/asl_alphabet_train/asl_alphabet_train",
   "output_csv": "/home/senamorsin/Desktop/conference/data/processed/asl_letters_landmarks.csv",
+  "delegate": "cpu",
   "accepted_labels": [
     "A",
     "B",

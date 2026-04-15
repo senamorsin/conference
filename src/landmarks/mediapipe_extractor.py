@@ -11,6 +11,7 @@ from mediapipe.tasks.python.core.base_options import BaseOptions
 from mediapipe.tasks.python.vision.core.vision_task_running_mode import VisionTaskRunningMode
 from mediapipe.tasks.python.vision.hand_landmarker import HandLandmarker, HandLandmarkerOptions
 
+from src.landmarks.geometry_features import ENGINEERED_FEATURE_NAMES, compute_engineered_hand_features
 from src.landmarks.normalization import normalize_hand_landmarks
 
 
@@ -34,7 +35,7 @@ class MediaPipeHandExtractor:
         model_asset_path: str | Path = DEFAULT_MODEL_PATH,
         delegate: str = "cpu",
     ) -> None:
-        self.feature_dim = LANDMARK_FEATURE_DIM
+        self.feature_dim = LANDMARK_FEATURE_DIM + len(ENGINEERED_FEATURE_NAMES)
         model_path = Path(model_asset_path).expanduser().resolve()
         if not model_path.exists():
             raise FileNotFoundError(f"Hand Landmarker model asset was not found: {model_path}")
@@ -66,7 +67,9 @@ class MediaPipeHandExtractor:
 
         first_hand = result.hand_landmarks[0]
         raw = np.array([[lm.x, lm.y, lm.z] for lm in first_hand], dtype=np.float32)
-        features = normalize_hand_landmarks(raw).reshape(-1)
+        normalized = normalize_hand_landmarks(raw)
+        engineered = compute_engineered_hand_features(normalized)
+        features = np.concatenate([normalized.reshape(-1), engineered], dtype=np.float32)
         return LandmarkExtractionResult(
             landmarks_detected=True,
             features=features,

@@ -1,0 +1,37 @@
+dataset:
+  name: danrasband/asl-alphabet-test
+  root_dir: data/raw/asl-alphabet-test
+  train_subdir: test
+  accepted_labels:
+    - A
+    - B
+    - C
+    - D
+    - E
+    - F
+    - G
+    - H
+    - I
+    - K
+    - L
+    - M
+    - N
+    - O
+    - P
+    - Q
+    - R
+    - S
+    - T
+    - U
+    - V
+    - W
+    - X
+    - Y
+    - NOTHING
+
+features:
+  output_csv: data/processed/asl_letters_cross_dataset.csv
+
+evaluation:
+  model_path: models/letters/asl_letters_combined_random_forest.joblib
+  metrics_output_path: reports/letters/asl_letters_combined_eval_cross_metrics.json

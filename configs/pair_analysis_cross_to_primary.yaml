@@ -1,0 +1,13 @@
+analysis:
+  model_path: models/letters/asl_letters_cross_dataset_random_forest.joblib
+  features_csv: data/processed/asl_letters_landmarks.csv
+  output_path: reports/letters/pair_analysis_cross_to_primary.json
+  top_k: 10
+  pairs:
+    - [M, N]
+    - [C, D]
+    - [R, U]
+    - [U, V]
+    - [T, E]
+    - [O, D]
+    - [F, B]
