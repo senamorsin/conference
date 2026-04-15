@@ -9,11 +9,13 @@ from fastapi.staticfiles import StaticFiles
 
 from src.app.routes import router
 from src.app.state import create_app_state
+from src.tts import create_default_speech_synthesizer
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.pipeline = create_app_state()
+    app.state.speech = create_default_speech_synthesizer()
     try:
         yield
     finally:

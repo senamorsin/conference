@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ASL MVP</title>
-  <link rel="stylesheet" href="/static/styles.css">
-  <script src="/static/app.js" defer></script>
+  <link rel="stylesheet" href="/static/styles.css?v=20260415-tts-debug-1">
+  <script src="/static/app.js?v=20260415-tts-debug-1" defer></script>
 </head>
 <body>
   <main class="page">
@@ -50,6 +50,24 @@
             <div><dt>Word history</dt><dd id="word-history-value">{{ " | ".join(word_history) if word_history else "Empty" }}</dd></div>
             <div><dt>Feature dim</dt><dd id="feature-dim-value">{{ feature_dim }}</dd></div>
           </dl>
+
+          <section class="speech-panel">
+            <div class="speech-header">
+              <span class="speech-label">Speech</span>
+              <span id="speech-status" class="speech-status">idle</span>
+            </div>
+            <div class="button-row">
+              <button id="speak-word" type="button">Speak Word or Buffer</button>
+              <label class="speech-toggle">
+                <input id="auto-speak" type="checkbox">
+                <span>Auto-speak new word</span>
+              </label>
+            </div>
+            <audio id="speech-player" class="speech-player" controls preload="none"></audio>
+            <p id="speech-message" class="speech-message">
+              Server-side Piper TTS speaks the finalized word, or the current accepted letter buffer if the word is not finalized yet.
+            </p>
+          </section>
 
           <form id="upload-form" class="form" action="/api/letters/predict" method="post" enctype="multipart/form-data">
             <label for="file">Upload a single frame instead</label>

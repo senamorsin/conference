@@ -35,3 +35,7 @@ class ResetResponse(BaseModel):
     status: str
     accepted_letters: str
     word_history: list[str] = []
+
+
+class TTSRequest(BaseModel):
+    text: str | None = None

@@ -170,6 +170,54 @@ dd {
   gap: 10px;
 }
 
+.speech-panel {
+  padding: 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.speech-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.speech-label {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.speech-status {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(51, 65, 85, 0.1);
+  color: #334155;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.speech-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.speech-message {
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.speech-player {
+  width: 100%;
+  margin-top: 10px;
+}
+
 .button-row {
   display: flex;
   flex-wrap: wrap;

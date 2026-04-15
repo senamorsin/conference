@@ -7,6 +7,11 @@ const startCameraButton = document.getElementById("start-camera");
 const stopCameraButton = document.getElementById("stop-camera");
 const resetStateButton = document.getElementById("reset-state");
 const uploadForm = document.getElementById("upload-form");
+const speakWordButton = document.getElementById("speak-word");
+const autoSpeakCheckbox = document.getElementById("auto-speak");
+const speechStatus = document.getElementById("speech-status");
+const speechMessage = document.getElementById("speech-message");
+const speechPlayer = document.getElementById("speech-player");
 
 const statTargets = {
   mode: document.getElementById("mode-value"),
@@ -33,6 +38,16 @@ const HAND_CONNECTIONS = [
 let mediaStream = null;
 let inferenceTimer = null;
 let requestInFlight = false;
+let lastSpokenWordKey = "";
+let speechPreloadPromise = null;
+
+function setSpeakButtonBusy(isBusy) {
+  if (!speakWordButton) {
+    return;
+  }
+  speakWordButton.disabled = isBusy;
+  speakWordButton.textContent = isBusy ? "Preparing Speech..." : "Speak Word or Buffer";
+}
 
 function setCameraUiState({ pill, message, running }) {
   cameraStatus.textContent = pill;
@@ -52,6 +67,184 @@ function applyPrediction(payload) {
   statTargets.word_history.textContent = payload.word_history?.length ? payload.word_history.join(" | ") : "Empty";
   statTargets.feature_dim.textContent = String(payload.feature_dim ?? "63");
   drawHandLandmarks(payload.hand_landmarks ?? []);
+
+  const word = normalizeSpeakableWord(payload.final_word);
+  const status = payload.final_word_status ?? "";
+  if (autoSpeakCheckbox?.checked && word && status !== "unknown") {
+    const wordKey = `${word}:${status}`;
+    if (wordKey !== lastSpokenWordKey) {
+      speakWord(word);
+      lastSpokenWordKey = wordKey;
+    }
+  }
+}
+
+function setSpeechUiState(status, message) {
+  if (speechStatus) {
+    speechStatus.textContent = status;
+  }
+  if (speechMessage) {
+    speechMessage.textContent = message;
+  }
+}
+
+function normalizeSpeakableWord(value) {
+  if (typeof value !== "string") {
+    return "";
+  }
+  const trimmed = value.trim();
+  if (!trimmed || trimmed === "None") {
+    return "";
+  }
+  return trimmed;
+}
+
+function getSpeakText() {
+  const finalWord = normalizeSpeakableWord(statTargets.final_word?.textContent ?? "");
+  if (finalWord) {
+    return finalWord;
+  }
+  return normalizeSpeakableWord(statTargets.accepted_letters?.textContent ?? "");
+}
+
+function stopSpeechPlayback() {
+  if (speechPlayer) {
+    speechPlayer.pause();
+    speechPlayer.removeAttribute("src");
+    speechPlayer.load();
+  }
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+  }
+}
+
+async function preloadSpeechEngine() {
+  if (speechPreloadPromise) {
+    return speechPreloadPromise;
+  }
+
+  setSpeechUiState("warming", "Preparing the Piper voice. The first TTS request can take a couple of seconds.");
+  speechPreloadPromise = fetch("/api/tts/preload", {
+    method: "POST",
+  })
+    .then(async (response) => {
+      if (!response.ok) {
+        let detail = `Speech preload failed with ${response.status}`;
+        try {
+          const payload = await response.json();
+          if (payload?.detail) {
+            detail = String(payload.detail);
+          }
+        } catch (_error) {
+          // Ignore JSON parsing failures and keep the generic error.
+        }
+        throw new Error(detail);
+      }
+      setSpeechUiState("ready", "Piper voice is ready.");
+      return true;
+    })
+    .catch((error) => {
+      const message = error instanceof Error ? error.message : "Speech preload failed";
+      setSpeechUiState("error", message);
+      throw error;
+    });
+
+  return speechPreloadPromise;
+}
+
+function buildUtterance(word) {
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = "en-US";
+  utterance.rate = 0.95;
+  utterance.pitch = 1;
+  return utterance;
+}
+
+function buildServerSpeechUrl(word) {
+  const params = new URLSearchParams({
+    text: word,
+    ts: String(Date.now()),
+  });
+  return `/api/tts/speak?${params.toString()}`;
+}
+
+async function playServerSpeech(word) {
+  const normalized = normalizeSpeakableWord(word);
+  if (!normalized) {
+    setSpeechUiState("idle", "No finalized word is available for speech yet.");
+    return false;
+  }
+  if (!speechPlayer) {
+    throw new Error("Speech player element is not available");
+  }
+
+  setSpeechUiState("loading", `Generating audio for: ${normalized}`);
+  await preloadSpeechEngine();
+  stopSpeechPlayback();
+  speechPlayer.src = buildServerSpeechUrl(normalized);
+  speechPlayer.autoplay = true;
+  speechPlayer.load();
+
+  try {
+    const playPromise = speechPlayer.play();
+    if (playPromise && typeof playPromise.then === "function") {
+      await playPromise;
+    }
+    setSpeechUiState("speaking", `Speaking: ${normalized}`);
+    return true;
+  } catch (error) {
+    setSpeechUiState("ready", `Audio is ready for ${normalized}. Press play on the built-in player if autoplay was blocked.`);
+    return true;
+  }
+}
+
+function speakWordInBrowser(word) {
+  const normalized = normalizeSpeakableWord(word);
+  if (!normalized) {
+    setSpeechUiState("idle", "No finalized word is available for speech yet.");
+    return false;
+  }
+
+  if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+    setSpeechUiState("unsupported", "This browser does not support speech synthesis.");
+    return false;
+  }
+
+  stopSpeechPlayback();
+  const utterance = buildUtterance(normalized);
+  utterance.onstart = () => {
+    setSpeechUiState("speaking", `Speaking: ${normalized}`);
+  };
+  utterance.onend = () => {
+    setSpeechUiState("idle", `Finished speaking: ${normalized}`);
+  };
+  utterance.onerror = () => {
+    setSpeechUiState("error", `Speech synthesis failed for: ${normalized}`);
+  };
+  window.speechSynthesis.speak(utterance);
+  return true;
+}
+
+async function speakWord(word) {
+  const normalized = normalizeSpeakableWord(word);
+  if (!normalized) {
+    setSpeechUiState("idle", "No finalized word or accepted letters are available for speech yet.");
+    return false;
+  }
+
+  try {
+    await playServerSpeech(normalized);
+    return true;
+  } catch (error) {
+    const serverMessage = error instanceof Error ? error.message : "Server TTS failed";
+    if (("speechSynthesis" in window) && typeof SpeechSynthesisUtterance !== "undefined") {
+      setSpeechUiState("fallback", `${serverMessage}. Falling back to browser speech.`);
+      return speakWordInBrowser(normalized);
+    }
+
+    setSpeechUiState("error", serverMessage);
+    return false;
+  }
 }
 
 function drawHandLandmarks(landmarks) {
@@ -224,6 +417,9 @@ async function resetPipelineState() {
     feature_dim: statTargets.feature_dim.textContent,
     hand_landmarks: [],
   });
+  lastSpokenWordKey = "";
+  stopSpeechPlayback();
+  setSpeechUiState("idle", "Buffer reset. Waiting for a new finalized word.");
 }
 
 startCameraButton?.addEventListener("click", async () => {
@@ -283,6 +479,46 @@ uploadForm?.addEventListener("submit", async (event) => {
   }
 });
 
+speechPlayer?.addEventListener("ended", () => {
+  const currentWord = getSpeakText();
+  setSpeechUiState("idle", currentWord ? `Finished speaking: ${currentWord}` : "Finished speaking.");
+});
+
+speechPlayer?.addEventListener("canplay", () => {
+  const currentWord = getSpeakText();
+  setSpeechUiState("ready", currentWord ? `Audio is ready for: ${currentWord}` : "Audio is ready.");
+});
+
+speechPlayer?.addEventListener("error", () => {
+  setSpeechUiState("error", "Audio playback failed. Try clicking play on the built-in player or regenerate the word.");
+});
+
+speakWordButton?.addEventListener("click", async () => {
+  const textToSpeak = getSpeakText();
+  setSpeechUiState(
+    "clicked",
+    textToSpeak ? `Speech request started for: ${textToSpeak}` : "Speech button clicked, but there is no finalized word or accepted buffer yet.",
+  );
+  setSpeakButtonBusy(true);
+  try {
+    const spoke = await speakWord(textToSpeak);
+    if (spoke) {
+      const currentWord = getSpeakText();
+      const currentStatus = statTargets.final_word_status?.textContent ?? "";
+      lastSpokenWordKey = currentWord ? `${currentWord}:${currentStatus}` : "";
+    }
+  } finally {
+    setSpeakButtonBusy(false);
+  }
+});
+
 window.addEventListener("beforeunload", () => {
+  stopSpeechPlayback();
   stopCameraStream();
+});
+
+window.addEventListener("load", () => {
+  preloadSpeechEngine().catch(() => {
+    // The UI already shows the preload error; keep the app usable for inference.
+  });
 });

@@ -32,6 +32,7 @@ class AppPipelineState:
                 landmarks_detected=False,
                 confidence=0.0,
                 hand_landmarks=[],
+                resolver_name=None,
             )
 
         prediction = self.classifier.predict(extraction.features)
