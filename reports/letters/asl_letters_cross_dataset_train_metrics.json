@@ -1,7 +1,7 @@
 {
-  "accuracy": 0.948905109489051,
-  "train_samples": 546,
-  "test_samples": 137,
+  "accuracy": 0.9328358208955224,
+  "train_samples": 535,
+  "test_samples": 134,
   "labels": [
     "A",
     "B",
@@ -21,6 +21,7 @@
     "Q",
     "R",
     "S",
+    "SPACE",
     "T",
     "U",
     "V",
@@ -32,8 +33,8 @@
   "classification_report": {
     "A": {
       "precision": 1.0,
-      "recall": 1.0,
-      "f1-score": 1.0,
+      "recall": 0.8333333333333334,
+      "f1-score": 0.9090909090909091,
       "support": 6.0
     },
     "B": {
@@ -43,16 +44,16 @@
       "support": 6.0
     },
     "C": {
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1-score": 1.0,
-      "support": 5.0
-    },
-    "D": {
       "precision": 0.8333333333333334,
       "recall": 1.0,
       "f1-score": 0.9090909090909091,
       "support": 5.0
+    },
+    "D": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 6.0
     },
     "E": {
       "precision": 1.0,
@@ -70,7 +71,7 @@
       "precision": 1.0,
       "recall": 1.0,
       "f1-score": 1.0,
-      "support": 6.0
+      "support": 5.0
     },
     "H": {
       "precision": 1.0,
@@ -79,10 +80,10 @@
       "support": 6.0
     },
     "I": {
-      "precision": 0.8,
-      "recall": 1.0,
-      "f1-score": 0.8888888888888888,
-      "support": 4.0
+      "precision": 1.0,
+      "recall": 0.8333333333333334,
+      "f1-score": 0.9090909090909091,
+      "support": 6.0
     },
     "K": {
       "precision": 1.0,
@@ -94,49 +95,55 @@
       "precision": 1.0,
       "recall": 1.0,
       "f1-score": 1.0,
-      "support": 6.0
+      "support": 5.0
     },
     "M": {
-      "precision": 0.5,
-      "recall": 0.4,
-      "f1-score": 0.4444444444444444,
-      "support": 5.0
+      "precision": 1.0,
+      "recall": 0.75,
+      "f1-score": 0.8571428571428571,
+      "support": 4.0
     },
     "N": {
       "precision": 0.8,
-      "recall": 0.6666666666666666,
-      "f1-score": 0.7272727272727273,
-      "support": 6.0
+      "recall": 1.0,
+      "f1-score": 0.8888888888888888,
+      "support": 4.0
     },
     "O": {
+      "precision": 0.8,
+      "recall": 0.8,
+      "f1-score": 0.8,
+      "support": 5.0
+    },
+    "P": {
       "precision": 1.0,
       "recall": 0.8,
       "f1-score": 0.8888888888888888,
       "support": 5.0
     },
-    "P": {
-      "precision": 0.75,
-      "recall": 1.0,
-      "f1-score": 0.8571428571428571,
-      "support": 6.0
-    },
     "Q": {
-      "precision": 1.0,
+      "precision": 0.8333333333333334,
       "recall": 1.0,
-      "f1-score": 1.0,
-      "support": 6.0
+      "f1-score": 0.9090909090909091,
+      "support": 5.0
     },
     "R": {
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1-score": 1.0,
-      "support": 6.0
+      "precision": 0.75,
+      "recall": 0.6,
+      "f1-score": 0.6666666666666666,
+      "support": 5.0
     },
     "S": {
       "precision": 1.0,
-      "recall": 0.8333333333333334,
-      "f1-score": 0.9090909090909091,
+      "recall": 1.0,
+      "f1-score": 1.0,
       "support": 6.0
+    },
+    "SPACE": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
     },
     "T": {
       "precision": 1.0,
@@ -145,47 +152,47 @@
       "support": 6.0
     },
     "U": {
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1-score": 1.0,
+      "precision": 0.7142857142857143,
+      "recall": 0.8333333333333334,
+      "f1-score": 0.7692307692307693,
       "support": 6.0
     },
     "V": {
       "precision": 1.0,
-      "recall": 1.0,
-      "f1-score": 1.0,
+      "recall": 0.8333333333333334,
+      "f1-score": 0.9090909090909091,
       "support": 6.0
     },
     "W": {
-      "precision": 1.0,
+      "precision": 0.8571428571428571,
       "recall": 1.0,
-      "f1-score": 1.0,
+      "f1-score": 0.9230769230769231,
       "support": 6.0
     },
     "X": {
       "precision": 1.0,
       "recall": 1.0,
       "f1-score": 1.0,
-      "support": 6.0
+      "support": 5.0
     },
     "Y": {
-      "precision": 1.0,
+      "precision": 0.8571428571428571,
       "recall": 1.0,
-      "f1-score": 1.0,
+      "f1-score": 0.9230769230769231,
       "support": 6.0
     },
-    "accuracy": 0.948905109489051,
+    "accuracy": 0.9328358208955224,
     "macro avg": {
-      "precision": 0.9451388888888889,
-      "recall": 0.9458333333333334,
-      "f1-score": 0.9427008177008176,
-      "support": 137.0
+      "precision": 0.9378095238095239,
+      "recall": 0.9313333333333332,
+      "f1-score": 0.9304970584970584,
+      "support": 134.0
     },
     "weighted avg": {
-      "precision": 0.9501216545012167,
-      "recall": 0.948905109489051,
-      "f1-score": 0.9469249323263921,
-      "support": 137.0
+      "precision": 0.9392146410803127,
+      "recall": 0.9328358208955224,
+      "f1-score": 0.9321549097668499,
+      "support": 134.0
     }
   },
   "model_output_path": "/home/senamorsin/Desktop/conference/models/letters/asl_letters_cross_dataset_random_forest.joblib",

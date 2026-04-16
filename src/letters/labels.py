@@ -8,7 +8,7 @@ from src.landmarks.geometry_features import ENGINEERED_FEATURE_NAMES
 STATIC_ASL_LETTERS: Final[tuple[str, ...]] = tuple("ABCDEFGHIKLMNOPQRSTUVWXY")
 MOTION_ASL_LETTERS: Final[tuple[str, ...]] = ("J", "Z")
 CONTROL_LABELS: Final[tuple[str, ...]] = ("NOTHING", "SPACE", "DELETE")
-DEFAULT_TRAINING_LABELS: Final[tuple[str, ...]] = STATIC_ASL_LETTERS + ("NOTHING",)
+DEFAULT_TRAINING_LABELS: Final[tuple[str, ...]] = STATIC_ASL_LETTERS + ("NOTHING", "SPACE")
 LANDMARK_FEATURE_COLUMNS: Final[tuple[str, ...]] = tuple(f"f{index}" for index in range(63))
 FEATURE_COLUMNS: Final[tuple[str, ...]] = LANDMARK_FEATURE_COLUMNS + ENGINEERED_FEATURE_NAMES
 

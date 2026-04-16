@@ -1,0 +1,36 @@
+{
+  "dataset_root": "/home/senamorsin/Desktop/conference/data/raw/msasl/MS-ASL",
+  "manifest_output_path": "/home/senamorsin/Desktop/conference/data/processed/msasl_words_20_manifest.csv",
+  "rows_written": 740,
+  "unique_videos": 273,
+  "counts_per_split": {
+    "train": {
+      "BATHROOM": 33,
+      "BOOK": 36,
+      "DRINK": 40,
+      "EAT": 40,
+      "FAMILY": 36,
+      "GOOD": 37,
+      "HELLO": 30,
+      "HELP": 40,
+      "NAME": 38,
+      "NEED": 38,
+      "NO": 40,
+      "PLEASE": 39,
+      "SORRY": 25,
+      "THANK_YOU": 35,
+      "WANT": 40,
+      "WATER": 40,
+      "WHAT": 40,
+      "WHERE": 40,
+      "WHO": 33,
+      "YES": 40
+    },
+    "val": {},
+    "test": {}
+  },
+  "skipped": {
+    "unsupported_label": 24317,
+    "limited_by_split_cap": 60
+  }
+}

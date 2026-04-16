@@ -1,0 +1,140 @@
+{
+  "accuracy": 0.8333333333333334,
+  "train_samples": 661,
+  "test_samples": 48,
+  "labels": [
+    "BATHROOM",
+    "BOOK",
+    "DRINK",
+    "EAT",
+    "FAMILY",
+    "GOOD",
+    "HELLO",
+    "HELP",
+    "NAME",
+    "NEED",
+    "NO",
+    "PLEASE",
+    "SORRY",
+    "THANK_YOU",
+    "WANT",
+    "WATER",
+    "WHAT",
+    "WHERE",
+    "WHO",
+    "YES"
+  ],
+  "classification_report": {
+    "BATHROOM": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "BOOK": {
+      "precision": 1.0,
+      "recall": 0.3333333333333333,
+      "f1-score": 0.5,
+      "support": 3.0
+    },
+    "FAMILY": {
+      "precision": 0.75,
+      "recall": 1.0,
+      "f1-score": 0.8571428571428571,
+      "support": 3.0
+    },
+    "GOOD": {
+      "precision": 0.5,
+      "recall": 0.3333333333333333,
+      "f1-score": 0.4,
+      "support": 3.0
+    },
+    "HELLO": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "HELP": {
+      "precision": 0.75,
+      "recall": 1.0,
+      "f1-score": 0.8571428571428571,
+      "support": 3.0
+    },
+    "NAME": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "NEED": {
+      "precision": 1.0,
+      "recall": 0.3333333333333333,
+      "f1-score": 0.5,
+      "support": 3.0
+    },
+    "NO": {
+      "precision": 0.75,
+      "recall": 1.0,
+      "f1-score": 0.8571428571428571,
+      "support": 3.0
+    },
+    "PLEASE": {
+      "precision": 0.75,
+      "recall": 1.0,
+      "f1-score": 0.8571428571428571,
+      "support": 3.0
+    },
+    "SORRY": {
+      "precision": 1.0,
+      "recall": 0.6666666666666666,
+      "f1-score": 0.8,
+      "support": 3.0
+    },
+    "THANK_YOU": {
+      "precision": 0.5,
+      "recall": 0.6666666666666666,
+      "f1-score": 0.5714285714285714,
+      "support": 3.0
+    },
+    "WATER": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "WHERE": {
+      "precision": 0.75,
+      "recall": 1.0,
+      "f1-score": 0.8571428571428571,
+      "support": 3.0
+    },
+    "WHO": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "YES": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 3.0
+    },
+    "accuracy": 0.8333333333333334,
+    "macro avg": {
+      "precision": 0.859375,
+      "recall": 0.8333333333333333,
+      "f1-score": 0.8160714285714286,
+      "support": 48.0
+    },
+    "weighted avg": {
+      "precision": 0.859375,
+      "recall": 0.8333333333333334,
+      "f1-score": 0.8160714285714286,
+      "support": 48.0
+    }
+  },
+  "model_output_path": "/home/senamorsin/Desktop/conference/models/words/combined_words_random_forest.joblib",
+  "split_strategy": "combined_split"
+}

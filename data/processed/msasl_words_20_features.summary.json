@@ -1,0 +1,33 @@
+{
+  "manifest_path": "/home/senamorsin/Desktop/conference/data/processed/msasl_words_20_manifest.csv",
+  "raw_video_dir": "/home/senamorsin/Desktop/conference/data/raw/msasl/videos",
+  "output_csv": "/home/senamorsin/Desktop/conference/data/processed/msasl_words_20_features.csv",
+  "delegate": "cpu",
+  "sequence_length": 12,
+  "rows_written": 501,
+  "saved_per_label": {
+    "BATHROOM": 22,
+    "BOOK": 25,
+    "DRINK": 22,
+    "EAT": 30,
+    "FAMILY": 31,
+    "GOOD": 23,
+    "HELLO": 16,
+    "HELP": 27,
+    "NAME": 25,
+    "NEED": 29,
+    "NO": 26,
+    "PLEASE": 26,
+    "SORRY": 14,
+    "THANK_YOU": 21,
+    "WANT": 24,
+    "WATER": 33,
+    "WHAT": 29,
+    "WHERE": 28,
+    "WHO": 23,
+    "YES": 27
+  },
+  "skipped": {
+    "missing_video": 239
+  }
+}

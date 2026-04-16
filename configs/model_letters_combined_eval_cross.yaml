@@ -28,6 +28,7 @@ dataset:
     - X
     - Y
     - NOTHING
+    - SPACE
 
 features:
   output_csv: data/processed/asl_letters_cross_dataset.csv

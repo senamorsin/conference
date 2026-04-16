@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Words · Sign Sense{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <p class="eyebrow">Words · Single sign</p>
+  <h1 class="page-title">Classify one ASL sign</h1>
+  <p class="page-lede">
+    Record a 1–3 second clip of a single sign or upload one. The model classifies it against a fixed
+    <strong><span id="word-vocab-size">50</span>-word vocabulary</strong> with calibrated confidence.
+    Low-confidence results are flagged — the system won't pretend to be certain when it isn't.
+  </p>
+</header>
+
+<section class="page-layout page-layout-two">
+  <section class="card card-stage">
+    <div class="card-header">
+      <span class="card-title">Camera</span>
+      <span id="camera-status" class="status-pill">idle</span>
+    </div>
+    <div class="camera-stage">
+      <video id="camera-preview" class="camera-preview" autoplay playsinline muted></video>
+      <canvas id="landmark-overlay" class="landmark-overlay" width="640" height="480" aria-hidden="true"></canvas>
+    </div>
+    <canvas id="capture-canvas" class="capture-canvas" width="640" height="480" aria-hidden="true"></canvas>
+    <p id="camera-message" class="help-text" aria-live="polite">
+      Camera is off. Start the stream to record a sign.
+    </p>
+    <div class="button-row">
+      <button id="start-camera" type="button" class="btn btn-primary">Start Camera</button>
+      <button id="stop-camera" type="button" class="btn btn-ghost" disabled>Stop Camera</button>
+    </div>
+
+    <div class="recorder-block">
+      <div class="card-header compact">
+        <span class="card-title">Recorder</span>
+        <span id="word-recorder-status" class="status-pill">idle</span>
+      </div>
+      <div class="button-row">
+        <button id="start-word-recording" type="button" class="btn btn-primary">Start Word Recording</button>
+        <button id="stop-word-recording" type="button" class="btn btn-ghost" disabled>Stop &amp; Analyze</button>
+      </div>
+      <div id="word-recording-timer" class="recording-timer" hidden>
+        <span id="word-timer-elapsed">0.0s</span>
+        <span class="timer-hint">aim for 1–3s</span>
+      </div>
+      <video id="word-recording-preview" class="clip-preview" controls playsinline preload="metadata"></video>
+    </div>
+  </section>
+
+  <aside class="stack">
+    <section class="card card-result">
+      <div class="card-header">
+        <span class="card-title">Prediction</span>
+        <span id="word-status-value" class="status-pill">idle</span>
+      </div>
+      <div id="word-result-card" class="word-result-card" hidden>
+        <div class="word-result-main">
+          <span id="word-result-label" class="word-result-label">—</span>
+          <span id="word-result-confidence-badge" class="confidence-badge" data-level="none">—</span>
+        </div>
+        <p id="word-result-alt" class="word-result-alt"></p>
+      </div>
+      <p id="word-message" class="help-text" aria-live="polite">
+        No word clip has been processed yet.
+      </p>
+      <details class="word-history-details">
+        <summary>Session history</summary>
+        <ol id="word-prediction-history" class="word-prediction-history"></ol>
+      </details>
+    </section>
+
+    <section class="card card-speech">
+      <div class="card-header">
+        <span class="card-title">Speech</span>
+        <span id="speech-status" class="status-pill">idle</span>
+      </div>
+      <div class="button-row">
+        <button id="speak-word" type="button" class="btn btn-primary">Speak Last Word</button>
+      </div>
+      <audio id="speech-player" class="speech-player" controls preload="none"></audio>
+      <p id="speech-message" class="help-text" aria-live="polite">
+        Piper TTS speaks the last accepted prediction.
+      </p>
+    </section>
+
+    <details class="card card-diagnostics">
+      <summary>Diagnostics &amp; upload</summary>
+      <dl class="mini-stats">
+        <div><dt>Predicted word</dt><dd id="predicted-word-value">None</dd></div>
+        <div><dt>Word confidence</dt><dd id="word-confidence-value">0.00</dd></div>
+        <div><dt>Detected steps</dt><dd id="word-detected-steps-value">0</dd></div>
+        <div><dt>Sampled steps</dt><dd id="word-sampled-steps-value">0</dd></div>
+      </dl>
+      <form id="word-upload-form" class="form" action="/api/words/predict" method="post" enctype="multipart/form-data">
+        <label for="word-file">Upload a short video clip instead</label>
+        <input id="word-file" name="file" type="file" accept="video/*" required>
+        <button type="submit" class="btn btn-ghost">Run Word Clip</button>
+      </form>
+    </details>
+  </aside>
+</section>
+{% endblock %}

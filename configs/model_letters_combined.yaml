@@ -28,6 +28,7 @@ dataset:
     - X
     - Y
     - NOTHING
+    - SPACE
 
 merge:
   input_csvs:

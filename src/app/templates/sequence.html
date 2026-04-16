@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Sequence · Sign Sense{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <p class="eyebrow">Sequence · Multi-word transcript</p>
+  <h1 class="page-title">Transcribe a phrase of ASL signs</h1>
+  <p class="page-lede">
+    Record or upload a longer clip with several signs in a row. Pause briefly
+    (<strong>~0.3s</strong>) between each sign so the segmenter can split them. The classifier runs
+    on every detected burst and assembles a transcript.
+  </p>
+</header>
+
+<section class="page-layout page-layout-two">
+  <section class="card card-stage">
+    <div class="card-header">
+      <span class="card-title">Camera</span>
+      <span id="camera-status" class="status-pill">idle</span>
+    </div>
+    <div class="camera-stage">
+      <video id="camera-preview" class="camera-preview" autoplay playsinline muted></video>
+      <canvas id="landmark-overlay" class="landmark-overlay" width="640" height="480" aria-hidden="true"></canvas>
+    </div>
+    <canvas id="capture-canvas" class="capture-canvas" width="640" height="480" aria-hidden="true"></canvas>
+    <p id="camera-message" class="help-text" aria-live="polite">
+      Camera is off. Start the stream to record a multi-sign clip.
+    </p>
+    <div class="button-row">
+      <button id="start-camera" type="button" class="btn btn-primary">Start Camera</button>
+      <button id="stop-camera" type="button" class="btn btn-ghost" disabled>Stop Camera</button>
+    </div>
+
+    <div class="recorder-block">
+      <div class="card-header compact">
+        <span class="card-title">Sequence recorder</span>
+        <span id="sequence-recorder-status" class="status-pill">idle</span>
+      </div>
+      <div class="button-row">
+        <button id="start-sequence-recording" type="button" class="btn btn-primary">Start Sequence Recording</button>
+        <button id="stop-sequence-recording" type="button" class="btn btn-ghost" disabled>Stop &amp; Analyze</button>
+      </div>
+      <div id="sequence-recording-timer" class="recording-timer" hidden>
+        <span id="sequence-timer-elapsed">0.0s</span>
+        <span class="timer-hint">aim for 2–15s · pause between signs</span>
+      </div>
+      <video id="sequence-recording-preview" class="clip-preview" controls playsinline preload="metadata"></video>
+    </div>
+  </section>
+
+  <aside class="stack">
+    <section class="card card-result">
+      <div class="card-header">
+        <span class="card-title">Transcript</span>
+        <span id="sequence-result-counts" class="status-pill">—</span>
+      </div>
+      <ol id="sequence-progress" class="sequence-progress" hidden aria-live="polite">
+        <li data-step="upload" class="progress-step">Uploading clip</li>
+        <li data-step="landmarks" class="progress-step">Extracting landmarks</li>
+        <li data-step="segment" class="progress-step">Segmenting signs</li>
+        <li data-step="classify" class="progress-step">Classifying words</li>
+      </ol>
+      <div id="sequence-result-card" class="sequence-result-card" hidden>
+        <div class="sequence-result-main">
+          <span class="sequence-result-label">Assembled phrase</span>
+          <span id="sequence-transcript" class="sequence-transcript">—</span>
+        </div>
+        <div class="button-row">
+          <button id="speak-sequence" type="button" class="btn btn-primary" disabled>Speak Transcript</button>
+        </div>
+        <ol id="sequence-chip-list" class="sequence-chip-list" aria-live="polite"></ol>
+        <dl id="sequence-diagnostics" class="mini-stats" hidden>
+          <div><dt>Extract mode</dt><dd id="seq-extract-mode">—</dd></div>
+          <div><dt>Sample FPS</dt><dd id="seq-sample-fps">—</dd></div>
+          <div><dt>Clip duration</dt><dd id="seq-duration">—</dd></div>
+          <div><dt>Processing</dt><dd id="seq-processing-time">—</dd></div>
+        </dl>
+      </div>
+      <p id="sequence-message" class="help-text" aria-live="polite">
+        No multi-word clip has been processed yet.
+      </p>
+    </section>
+
+    <section class="card card-speech">
+      <div class="card-header">
+        <span class="card-title">Audio output</span>
+        <span id="speech-status" class="status-pill">idle</span>
+      </div>
+      <audio id="speech-player" class="speech-player" controls preload="none"></audio>
+      <p id="speech-message" class="help-text" aria-live="polite">
+        Piper TTS plays back the assembled transcript.
+      </p>
+    </section>
+
+    <details class="card card-diagnostics">
+      <summary>Upload a clip</summary>
+      <form id="sequence-upload-form" class="form" action="/api/words/sequence" method="post" enctype="multipart/form-data">
+        <label for="sequence-file">Multi-sign video clip</label>
+        <input id="sequence-file" name="file" type="file" accept="video/*" required>
+        <button type="submit" class="btn btn-ghost">Run Sequence Clip</button>
+      </form>
+    </details>
+  </aside>
+</section>
+{% endblock %}

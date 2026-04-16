@@ -6,9 +6,18 @@ from fastapi import APIRouter, File, HTTPException, Query, Request, UploadFile
 from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 
-from src.app.schemas import HealthResponse, PredictResponse, ResetResponse, TTSRequest
+from src.app.schemas import (
+    HealthResponse,
+    PredictResponse,
+    ResetResponse,
+    TTSRequest,
+    WordPredictResponse,
+    WordSequenceResponse,
+)
 from src.app.state import AppPipelineState
 from src.tts import PiperSpeechSynthesizer
+from src.words.labels import WORD_FEATURE_COLUMNS, WORD_LABELS, display_word_label
+from src.words.service import WordRecognitionService, create_default_word_service
 
 router = APIRouter()
 templates = Jinja2Templates(directory="src/app/templates")
@@ -28,6 +37,14 @@ def _get_speech_synthesizer(request: Request) -> PiperSpeechSynthesizer:
     return synthesizer
 
 
+def _get_word_service(request: Request) -> WordRecognitionService:
+    service = getattr(request.app.state, "word_service", None)
+    if service is None:
+        service = create_default_word_service()
+        request.app.state.word_service = service
+    return service
+
+
 def _build_audio_filename(text: str) -> str:
     slug = re.sub(r"[^a-zA-Z0-9_-]+", "_", text.strip()).strip("_") or "speech"
     return f"{slug[:48]}.wav"
@@ -40,20 +57,30 @@ def _resolve_speech_text(pipeline: AppPipelineState, text: str | None) -> str:
             return normalized
         return ""
 
-    latest = pipeline.word_builder.latest
-    if latest is not None and latest.final_word.strip():
-        return latest.final_word.strip()
-
-    return pipeline.decoder.accepted_letters.strip()
+    phrase_parts = list(pipeline.word_builder.history)
+    current_buffer = pipeline.decoder.accepted_letters.strip()
+    if current_buffer:
+        phrase_parts.append(current_buffer)
+    return " ".join(part for part in phrase_parts if part.strip())
 
 
 @router.get("/", response_class=HTMLResponse)
-async def index(request: Request) -> HTMLResponse:
+async def home(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse(
+        request,
+        "home.html",
+        {"page": "home"},
+    )
+
+
+@router.get("/letters", response_class=HTMLResponse)
+async def letters_page(request: Request) -> HTMLResponse:
     pipeline = _get_pipeline(request)
     return templates.TemplateResponse(
         request,
-        "index.html",
+        "letters.html",
         {
+            "page": "letters",
             "mode": pipeline.mode,
             "accepted_letters": pipeline.decoder.accepted_letters,
             "current_letter": pipeline.decoder.current_letter,
@@ -67,18 +94,65 @@ async def index(request: Request) -> HTMLResponse:
     )
 
 
+@router.get("/words", response_class=HTMLResponse)
+async def words_page(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse(
+        request,
+        "words.html",
+        {"page": "words"},
+    )
+
+
+@router.get("/sequence", response_class=HTMLResponse)
+async def sequence_page(request: Request) -> HTMLResponse:
+    return templates.TemplateResponse(
+        request,
+        "sequence.html",
+        {"page": "sequence"},
+    )
+
+
 @router.get("/health", response_model=HealthResponse)
 async def health(request: Request) -> HealthResponse:
     pipeline = _get_pipeline(request)
+    word_service = _get_word_service(request)
     return HealthResponse(
         status="ok",
         mode=pipeline.mode,
         accepted_letters=pipeline.decoder.accepted_letters,
         feature_dim=pipeline.extractor.feature_dim,
+        word_feature_dim=len(WORD_FEATURE_COLUMNS),
+        word_vocab_size=len(WORD_LABELS),
+        word_vocab=[display_word_label(w) or w for w in WORD_LABELS],
         final_word=pipeline.word_builder.latest.final_word if pipeline.word_builder.latest else None,
         final_word_status=pipeline.word_builder.latest.status if pipeline.word_builder.latest else None,
         word_history=list(pipeline.word_builder.history),
+        sequence_frame_extract=word_service.sequence_frame_extract,
+        sequence_sample_fps=float(word_service.sequence_sample_fps),
+        sequence_max_input_side=word_service.sequence_max_input_side,
     )
+
+
+@router.get("/api/words/sequence/capabilities")
+async def word_sequence_capabilities(request: Request) -> dict[str, object]:
+    """Discoverable settings for clients; incremental streaming is not implemented yet."""
+
+    service = _get_word_service(request)
+    return {
+        "extract_modes": ["legacy", "seek", "fast", "linear"],
+        "streaming": {
+            "incremental": False,
+            "hint": (
+                "Send shorter overlapping clips with separate POSTs for lower latency until "
+                "WebSocket/SSE lands; each request still runs full clip inference."
+            ),
+        },
+        "active_settings": {
+            "SEQUENCE_FRAME_EXTRACT": service.sequence_frame_extract,
+            "SEQUENCE_SAMPLE_FPS": service.sequence_sample_fps,
+            "SEQUENCE_MAX_INPUT_SIDE": service.sequence_max_input_side,
+        },
+    }
 
 
 @router.post("/api/letters/predict", response_model=PredictResponse)
@@ -89,11 +163,47 @@ async def predict_letter(request: Request, file: UploadFile = File(...)) -> Pred
     return PredictResponse(**result)
 
 
+@router.post("/api/words/predict", response_model=WordPredictResponse)
+async def predict_word(request: Request, file: UploadFile = File(...)) -> WordPredictResponse:
+    service = _get_word_service(request)
+    video_bytes = await file.read()
+    try:
+        result = service.predict_from_video_bytes(video_bytes=video_bytes, filename=file.filename or "upload.mp4")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return WordPredictResponse(**result)
+
+
+@router.post("/api/words/sequence", response_model=WordSequenceResponse)
+async def predict_word_sequence(request: Request, file: UploadFile = File(...)) -> WordSequenceResponse:
+    service = _get_word_service(request)
+    video_bytes = await file.read()
+    try:
+        result = service.predict_sequence_from_video_bytes(
+            video_bytes=video_bytes,
+            filename=file.filename or "upload.mp4",
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    return WordSequenceResponse(**result)
+
+
 @router.post("/api/reset", response_model=ResetResponse)
 async def reset(request: Request) -> ResetResponse:
     pipeline = _get_pipeline(request)
     pipeline.reset()
     return ResetResponse(status="reset", accepted_letters="", word_history=[])
+
+
+@router.post("/api/delete-last", response_model=ResetResponse)
+async def delete_last(request: Request) -> ResetResponse:
+    pipeline = _get_pipeline(request)
+    pipeline.delete_last_letter()
+    return ResetResponse(
+        status="deleted",
+        accepted_letters=pipeline.decoder.accepted_letters,
+        word_history=list(pipeline.word_builder.history),
+    )
 
 
 @router.post("/api/tts/speak")

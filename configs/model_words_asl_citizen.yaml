@@ -1,0 +1,25 @@
+dataset:
+  name: asl_citizen_words_overlap
+  archive_path: data/raw/asl_citizen/ASL_Citizen.zip
+  manifest_output_path: data/processed/asl_citizen_words_manifest.csv
+  max_samples_per_split:
+    train: 15
+    val: 4
+    test: 6
+
+download:
+  raw_video_dir: data/raw/asl_citizen/subset/videos
+
+features:
+  output_csv: data/processed/asl_citizen_words_features.csv
+  sequence_length: 12
+  delegate: auto
+
+training:
+  model_output_path: models/words/asl_citizen_words_random_forest.joblib
+  metrics_output_path: reports/words/asl_citizen_words_metrics.json
+  n_estimators: 250
+  random_state: 42
+  class_weight: balanced_subsample
+  test_size: 0.2
+  select_top_k_features: 300

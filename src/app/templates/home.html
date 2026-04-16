@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Sense — Live ASL recognition{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <p class="eyebrow">Real-time ASL recognition · MVP</p>
+  <h1 class="hero-title">Turn hand signs into <span class="hero-highlight">words</span>.</h1>
+  <p class="hero-lede">
+    Sign Sense reads your webcam, tracks your hand with MediaPipe, and classifies ASL gestures
+    into text and speech. Three focused modes, one honest model. Pick where you want to start.
+  </p>
+  <div class="hero-badges">
+    <span class="hero-badge">Runs in your browser</span>
+    <span class="hero-badge">CPU-only inference</span>
+    <span class="hero-badge">No video leaves your machine</span>
+  </div>
+  <div class="hero-ctas">
+    <a href="/letters" class="btn btn-primary">Start fingerspelling</a>
+    <a href="/sequence" class="btn btn-ghost">Transcribe a phrase</a>
+  </div>
+</section>
+
+<section class="mode-grid" aria-label="Modes">
+  <a href="/letters" class="mode-card" data-accent="violet">
+    <div class="mode-icon" aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="8" y="8" width="32" height="32" rx="10" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M16 30V20a2.5 2.5 0 0 1 5 0M21 22v-6a2.5 2.5 0 0 1 5 0v7M26 18a2.5 2.5 0 0 1 5 0v11a5 5 0 0 1-5 5h-2a5 5 0 0 1-4.7-3.3L16 26" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h2 class="mode-title">Letters</h2>
+    <p class="mode-tag">Fingerspelling, live</p>
+    <p class="mode-copy">
+      Live camera classifies each ASL letter as you sign it. Debounced and buffered into
+      words you can speak out loud with one click.
+    </p>
+    <span class="mode-cta">Start fingerspelling <span aria-hidden="true">→</span></span>
+  </a>
+
+  <a href="/words" class="mode-card" data-accent="fuchsia">
+    <div class="mode-icon" aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="6" y="10" width="36" height="22" rx="8" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M14 36l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="17" cy="21" r="1.6" fill="currentColor"/>
+        <circle cx="24" cy="21" r="1.6" fill="currentColor"/>
+        <circle cx="31" cy="21" r="1.6" fill="currentColor"/>
+      </svg>
+    </div>
+    <h2 class="mode-title">Words</h2>
+    <p class="mode-tag">Single sign, 50-word vocab</p>
+    <p class="mode-copy">
+      Record a short clip of a single ASL sign. The model classifies it against a fixed 50-word
+      vocabulary with explicit confidence and a "too close to call" guard rail.
+    </p>
+    <span class="mode-cta">Sign a word <span aria-hidden="true">→</span></span>
+  </a>
+
+  <a href="/sequence" class="mode-card" data-accent="indigo">
+    <div class="mode-icon" aria-hidden="true">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="6" y="10" width="26" height="14" rx="6" stroke="currentColor" stroke-width="1.8"/>
+        <rect x="16" y="24" width="26" height="14" rx="6" stroke="currentColor" stroke-width="1.8"/>
+        <path d="M13 17h12M23 31h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h2 class="mode-title">Sequence</h2>
+    <p class="mode-tag">Multi-word transcript</p>
+    <p class="mode-copy">
+      Sign several words in a row with brief pauses between each. Sign Sense splits the clip
+      into segments and assembles a per-segment transcript you can play back.
+    </p>
+    <span class="mode-cta">Transcribe a phrase <span aria-hidden="true">→</span></span>
+  </a>
+</section>
+
+<section class="home-details">
+  <article class="detail-card">
+    <h3>What it does well</h3>
+    <ul>
+      <li>Live fingerspelling at ~8 FPS using MediaPipe hand landmarks.</li>
+      <li>Single-sign classification with calibrated confidence and explicit rejection.</li>
+      <li>Multi-word transcripts from a single recorded clip with per-segment time ranges.</li>
+    </ul>
+  </article>
+  <article class="detail-card">
+    <h3>What it can't do (yet)</h3>
+    <ul>
+      <li>Translate arbitrary open-vocabulary ASL — the word model knows <span id="home-vocab-size">50</span> signs.</li>
+      <li>Handle continuous signing without pauses — sequence mode assumes brief gaps between signs.</li>
+      <li>Replace a human interpreter. This is an MVP for demonstrating the pipeline.</li>
+    </ul>
+  </article>
+</section>
+{% endblock %}

@@ -1,0 +1,30 @@
+dataset:
+  name: words_combined_sequence
+  sources:
+    - features_csv: data/processed/msasl_words_50_features.csv
+      use_splits: [train, val]
+    - features_csv: data/processed/asl_citizen_words_features.csv
+      use_splits: [train, val]
+  test_sources:
+    - features_csv: data/processed/msasl_words_50_features.csv
+      use_splits: [test]
+    - features_csv: data/processed/asl_citizen_words_features.csv
+      use_splits: [test]
+
+features:
+  sequence_length: 12
+
+training:
+  model_output_path: models/words/combined_words_temporal_cnn.pt
+  onnx_output_path: models/words/combined_words_temporal_cnn.onnx
+  metrics_output_path: reports/words/combined_words_temporal_cnn_metrics.json
+  compare_against_metrics_path: reports/words/combined_words_metrics_eval.json
+  random_state: 42
+  test_size: 0.2
+  val_size: 0.15
+  epochs: 30
+  batch_size: 32
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  hidden_dim: 128
+  dropout: 0.2

@@ -1,0 +1,92 @@
+[
+  {
+    "true_label": "GOOD",
+    "pred_label": "THANK_YOU",
+    "count": 2,
+    "share_of_true_label": 0.6666666666666666
+  },
+  {
+    "true_label": "BATHROOM",
+    "pred_label": "NO",
+    "count": 1,
+    "share_of_true_label": 0.3333333333333333
+  },
+  {
+    "true_label": "BATHROOM",
+    "pred_label": "THANK_YOU",
+    "count": 1,
+    "share_of_true_label": 0.3333333333333333
+  },
+  {
+    "true_label": "BOOK",
+    "pred_label": "HELP",
+    "count": 1,
+    "share_of_true_label": 0.3333333333333333
+  },
+  {
+    "true_label": "FAMILY",
+    "pred_label": "HELLO",
+    "count": 1,
+    "share_of_true_label": 0.3333333333333333
+  },
+  {
+    "true_label": "GOOD",
+    "pred_label": "HELP",
+    "count": 1,
+    "share_of_true_label": 0.3333333333333333
+  },
+  {
+    "true_label": "HELP",
+    "pred_label": "THANK_YOU",
+    "count": 1,
+    "share_of_true_label": 0.3333333333333333
+  },
+  {
+    "true_label": "NEED",
+    "pred_label": "NO",
+    "count": 1,
+    "share_of_true_label": 0.3333333333333333
+  },
+  {
+    "true_label": "NEED",
+    "pred_label": "WHERE",
+    "count": 1,
+    "share_of_true_label": 0.3333333333333333
+  },
+  {
+    "true_label": "NEED",
+    "pred_label": "WHO",
+    "count": 1,
+    "share_of_true_label": 0.3333333333333333
+  },
+  {
+    "true_label": "NO",
+    "pred_label": "WATER",
+    "count": 1,
+    "share_of_true_label": 0.3333333333333333
+  },
+  {
+    "true_label": "THANK_YOU",
+    "pred_label": "GOOD",
+    "count": 1,
+    "share_of_true_label": 0.3333333333333333
+  },
+  {
+    "true_label": "THANK_YOU",
+    "pred_label": "WATER",
+    "count": 1,
+    "share_of_true_label": 0.3333333333333333
+  },
+  {
+    "true_label": "YES",
+    "pred_label": "BATHROOM",
+    "count": 1,
+    "share_of_true_label": 0.3333333333333333
+  },
+  {
+    "true_label": "YES",
+    "pred_label": "BOOK",
+    "count": 1,
+    "share_of_true_label": 0.3333333333333333
+  }
+]

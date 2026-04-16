@@ -20,6 +20,9 @@ async def lifespan(app: FastAPI):
         yield
     finally:
         app.state.pipeline.close()
+        word_service = getattr(app.state, "word_service", None)
+        if word_service is not None:
+            word_service.close()
 
 
 def create_app() -> FastAPI:
@@ -31,5 +34,5 @@ def create_app() -> FastAPI:
 
 def run() -> None:
     host = os.getenv("HOST", "127.0.0.1")
-    port = int(os.getenv("PORT", "8000"))
+    port = int(os.getenv("PORT", "5000"))
     uvicorn.run("src.app.main:create_app", host=host, port=port, factory=True, reload=False)

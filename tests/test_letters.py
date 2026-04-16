@@ -35,10 +35,70 @@ def test_decoder_requires_blank_frames_before_reaccepting_letter() -> None:
     assert decoder.accepted_letters == "BB"
 
 
+def test_decoder_accepts_same_letter_twice_after_sustained_hold() -> None:
+    decoder = LetterDecoder(
+        stable_steps=2,
+        accept_threshold=0.6,
+        blank_steps_to_reset=2,
+        repeat_hold_steps=3,
+    )
+
+    for _ in range(6):
+        decoder.step(LetterPrediction(label="L", confidence=0.95))
+
+    assert decoder.accepted_letters == "LL"
+
+
+def test_decoder_blocks_third_identical_letter_during_sustained_hold() -> None:
+    decoder = LetterDecoder(
+        stable_steps=2,
+        accept_threshold=0.6,
+        blank_steps_to_reset=2,
+        repeat_hold_steps=2,
+    )
+
+    for _ in range(8):
+        decoder.step(LetterPrediction(label="L", confidence=0.95))
+
+    assert decoder.accepted_letters == "LL"
+
+
+def test_decoder_blocks_third_identical_letter_after_pause() -> None:
+    decoder = LetterDecoder(stable_steps=2, accept_threshold=0.6, blank_steps_to_reset=2)
+
+    for _ in range(2):
+        decoder.step(LetterPrediction(label="O", confidence=0.95))
+    decoder.step(None)
+    decoder.step(None)
+    for _ in range(2):
+        decoder.step(LetterPrediction(label="O", confidence=0.95))
+    decoder.step(None)
+    decoder.step(None)
+    for _ in range(2):
+        decoder.step(LetterPrediction(label="O", confidence=0.95))
+
+    assert decoder.accepted_letters == "OO"
+
+
+def test_decoder_delete_last_removes_last_accepted_letter() -> None:
+    decoder = LetterDecoder(stable_steps=2, accept_threshold=0.6, blank_steps_to_reset=2)
+
+    decoder.step(LetterPrediction(label="H", confidence=0.95))
+    decoder.step(LetterPrediction(label="H", confidence=0.95))
+    decoder.step(None)
+    decoder.step(None)
+    decoder.step(LetterPrediction(label="I", confidence=0.95))
+    decoder.step(LetterPrediction(label="I", confidence=0.95))
+    decoder.delete_last()
+
+    assert decoder.accepted_letters == "H"
+
+
 def test_normalize_dataset_label_supports_common_aliases() -> None:
     assert normalize_dataset_label("a") == "A"
     assert normalize_dataset_label("del") == "DELETE"
     assert normalize_dataset_label("nothing") == "NOTHING"
+    assert normalize_dataset_label("space") == "SPACE"
     assert normalize_dataset_label(" ") is None
 
 
@@ -123,3 +183,31 @@ def test_word_builder_finalizes_corrected_word_after_pause() -> None:
     assert finalized.final_word == "HELLO"
     assert finalized.status == "corrected"
     assert builder.history == ("HELLO",)
+
+
+def test_word_builder_can_finalize_immediately_for_space_control() -> None:
+    builder = LetterWordBuilder(
+        corrector=DictionaryCorrector(["HELLO"]),
+        finalize_blank_steps=7,
+    )
+
+    finalized = builder.finalize_now("HELLO")
+
+    assert finalized is not None
+    assert finalized.final_word == "HELLO"
+    assert builder.history == ("HELLO",)
+
+
+def test_word_builder_can_finalize_after_blank_duration_seconds() -> None:
+    builder = LetterWordBuilder(
+        corrector=DictionaryCorrector(["HELLO"]),
+        finalize_blank_steps=99,
+        finalize_blank_seconds=3.0,
+    )
+
+    assert builder.maybe_finalize("HELLO", blank_steps=2, blank_duration_seconds=2.9) is None
+
+    finalized = builder.maybe_finalize("HELLO", blank_steps=2, blank_duration_seconds=3.0)
+
+    assert finalized is not None
+    assert finalized.final_word == "HELLO"
